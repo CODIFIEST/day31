@@ -55,6 +55,14 @@ const firebaseConfig = {
     messagingSenderId: process.env.VITE_messagingSenderId,
     appId: process.env.VITE_appId
 };
+// const firebaseConfig = {
+//     apiKey: "AIzaSyDhHjhc56740EXC5JokTL1Q69MP1JV1qp4",
+//     authDomain: "day27-f9d4f.firebaseapp.com",
+//     projectId: "day27-f9d4f",
+//     storageBucket: "day27-f9d4f.appspot.com",
+//     messagingSenderId: "58144372448",
+//     appId: "1:58144372448:web:c554f3d3bcf8123e26c285"
+//   };
 const userApp = (0, app_1.initializeApp)(firebaseConfig);
 const database = (0, firestore_1.getFirestore)(userApp);
 const app = (0, express_1.default)();
@@ -117,8 +125,9 @@ app.post("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = (0, uuid_1.v4)();
     const password = req.body.password;
     const usercheck = yield getUserByEmail(email);
-    if (usercheck.email === email) {
-        return res.status(400).send('That user exists');
+    if (!usercheck) {
+        alert('that email already exists');
+        return res.status(400).send('wrong password duh');
     }
     else {
         //hash password

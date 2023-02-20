@@ -3,8 +3,8 @@ import cors from "cors"
 import { User } from "../domain/user";
 import { v4 as uuidv4 } from 'uuid';
 
-import {FirebaseApp, initializeApp} from "firebase/app"
-import { getFirestore,deleteDoc, setDoc, doc, getDoc, getDocs, collection, addDoc } from "firebase/firestore";
+import { FirebaseApp, initializeApp } from "firebase/app"
+import { getFirestore, deleteDoc, setDoc, doc, getDoc, getDocs, collection, addDoc } from "firebase/firestore";
 import { hash, verify } from "argon2";
 import * as jwt from "jsonwebtoken"
 
@@ -22,40 +22,48 @@ const firebaseConfig = {
     messagingSenderId: process.env.VITE_messagingSenderId,
     appId: process.env.VITE_appId
 };
-  
+// const firebaseConfig = {
+//     apiKey: "AIzaSyDhHjhc56740EXC5JokTL1Q69MP1JV1qp4",
+//     authDomain: "day27-f9d4f.firebaseapp.com",
+//     projectId: "day27-f9d4f",
+//     storageBucket: "day27-f9d4f.appspot.com",
+//     messagingSenderId: "58144372448",
+//     appId: "1:58144372448:web:c554f3d3bcf8123e26c285"
+//   };
+
 const userApp = initializeApp(firebaseConfig);
-const database = getFirestore(userApp);  
+const database = getFirestore(userApp);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.get("/user", async (req, res) =>{
+app.get("/user", async (req, res) => {
     // get a list of all the users
-    let userList:User[]=[];
+    let userList: User[] = [];
     console.log('we getting user list now')
 
-    const users = await getDocs(collection(database, "day30" ))
+    const users = await getDocs(collection(database, "day30"))
 
-    users.forEach((item) =>{
+    users.forEach((item) => {
         let user = item.data() as any as User
         userList.push(user)
     })
     res.send(userList)
 })
 
-app.get("/user/:id", async (req, res) =>{
+app.get("/user/:id", async (req, res) => {
     //get a single user by id
-    const user = await getDoc(doc(database,"day30", req.body.id ))
+    const user = await getDoc(doc(database, "day30", req.body.id))
     console.log(user.data())
     res.send(user.data())
 
 })
 
-async function getUserByEmail(email:string):Promise<User>{
-    let userList:User[]=[];
+async function getUserByEmail(email: string): Promise<User> {
+    let userList: User[] = [];
     console.log('we user by email now')
-    const users = await getDocs(collection(database, "day30" ))
-    users.forEach((item) =>{
+    const users = await getDocs(collection(database, "day30"))
+    users.forEach((item) => {
         let user = item.data() as any as User
         userList.push(user)
     })
@@ -64,30 +72,30 @@ async function getUserByEmail(email:string):Promise<User>{
 
 }
 
-app.post("/login", async (req, res)=>{
+app.post("/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     //now match the passwords. Does the hash of the password match the hash stored in the database
-    const user = await getUserByEmail( email)
+    const user = await getUserByEmail(email)
     const passwordVerified = await verify(user.hashedPassword, req.body.password)
-console.log('is password verified', passwordVerified)
-    if (!passwordVerified){
-       
+    console.log('is password verified', passwordVerified)
+    if (!passwordVerified) {
+
         return res.status(400).send('wrong password duh');
-        
+
     }
-    else{
+    else {
         //we need to create a valid json web token
-        const token = jwt.sign({id:user.id}, jwtKey, { expiresIn: '1800s'})
+        const token = jwt.sign({ id: user.id }, jwtKey, { expiresIn: '1800s' })
         // document.cookie=`token=${token}`;
         res.status(200).send({
-            user:user,
-            token:token
+            user: user,
+            token: token
         })
     }
 })
 
-app.post("/user", async (req, res) =>{
+app.post("/user", async (req, res) => {
     console.log('req.body--------------', req.body)
     const username = req.body.username;
     const email = req.body.email;
@@ -95,57 +103,59 @@ app.post("/user", async (req, res) =>{
     const password = req.body.password;
 
     const usercheck = await getUserByEmail(email);
-    if (usercheck.email === email){
-        return res.status(400).send('That user exists');
+    if (!usercheck) {
+        alert('that email already exists')
+        return res.status(400).send('wrong password duh');
+       
     }
-    else{
+    else {
 
-    //hash password
-    const hashedPassword= await hash(password);
-    console.log ('what does a hashed password look like?', hashedPassword)
+        //hash password
+        const hashedPassword = await hash(password);
+        console.log('what does a hashed password look like?', hashedPassword)
 
-    const user:User = {
-        username:username,
-        email:email,
-        id:id,
-        hashedPassword:hashedPassword,
-    }
-    console.log('user------------', user)
-    const pushUser = await setDoc(doc(database, "day30", user.id), user)
-    res.send(user)
-    console.log('what is pushUser', pushUser)
+        const user: User = {
+            username: username,
+            email: email,
+            id: id,
+            hashedPassword: hashedPassword,
+        }
+        console.log('user------------', user)
+        const pushUser = await setDoc(doc(database, "day30", user.id), user)
+        res.send(user)
+        console.log('what is pushUser', pushUser)
     }
 })
 
-app.put("/user/:id", async (req, res)=>{
-    const id= req.body.id;
+app.put("/user/:id", async (req, res) => {
+    const id = req.body.id;
     const email = req.body.email;
     const username = req.body.username;
-    const user ={
-        id:id,
-        email:email,
-        username:username
+    const user = {
+        id: id,
+        email: email,
+        username: username
     }
-console.log(user)
+    console.log(user)
 
     const authHeader = req.headers['authorization'];
-    if (!authHeader){
-       return res.status(400).send({error: "no auth header, not logged in"})
+    if (!authHeader) {
+        return res.status(400).send({ error: "no auth header, not logged in" })
     }
     const token = authHeader && authHeader.split(' ')[1]
-    if(!token) return res.status(400).send({error: "no token in auth header"})
+    if (!token) return res.status(400).send({ error: "no token in auth header" })
 
-    jwt.verify(token, jwtKey, async (err, decodedUser:{id:string})=>{
-         if (err){
-            return res.status(400).send({error: "invalid token"})
-         }
-         if (decodedUser.id !== req.body.id){
-            return res.status(400).send({error: "wrong user logged in, bad id"})
-         }
-         const updateUser = await setDoc(doc(database, "day30", req.body.id), user,  { merge: true })
+    jwt.verify(token, jwtKey, async (err, decodedUser: { id: string }) => {
+        if (err) {
+            return res.status(400).send({ error: "invalid token" })
+        }
+        if (decodedUser.id !== req.body.id) {
+            return res.status(400).send({ error: "wrong user logged in, bad id" })
+        }
+        const updateUser = await setDoc(doc(database, "day30", req.body.id), user, { merge: true })
 
-         console.log(updateUser)    
-         res.send(user)
+        console.log(updateUser)
+        res.send(user)
     })
 
 

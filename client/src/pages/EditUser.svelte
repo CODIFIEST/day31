@@ -16,7 +16,7 @@
             email: emailaddy,
         };
         const result = await axios
-            .put("https://day29-neon.vercel.app/user/:id", newUser, {
+            .put("https://day31-tan.vercel.app/user/:id", newUser, {
                 // withCredentials: true,
                 headers: { Authorization: `Bearer ${document.cookie}` },
             })

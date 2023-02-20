@@ -11,7 +11,7 @@
         console.log(email, password);
         if (password && email) {
             const result = await axios
-                .post("https://day29-neon.vercel.app/login", {
+                .post("https://day31-tan.vercel.app/login", {
                     email: email,
                     password: password,
                 })
@@ -56,11 +56,6 @@
             console.log("button clicked");
             if (password && email) {
                 await submitForm();
-
-                // these next two lines reload the page
-                // location.reload();
-                // return false;
-               
             }
         }}
         class="btn">Submit</button
