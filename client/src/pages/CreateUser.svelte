@@ -19,7 +19,8 @@
                     password: password,
                 },
                 {
-                    // headers: // TODO: add authentication to header on login, maybe not here on creation
+                    headers: // TODO: add authentication to header on login, maybe not here on creation
+                    {'Access-Control-Allow-Origin': '*'}
                 }
             );
             console.log(result.data);

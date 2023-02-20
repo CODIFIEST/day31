@@ -102,13 +102,13 @@ app.post("/user", async (req, res) => {
     const id = uuidv4();
     const password = req.body.password;
 
-    const usercheck = await getUserByEmail(email);
-    if (!usercheck) {
-        alert('that email already exists')
-        return res.status(400).send('wrong password duh');
+    // const usercheck = await getUserByEmail(email);
+    // if (!usercheck) {
+        
+    //     return res.status(400).send('that email already exists');
        
-    }
-    else {
+    // }
+    // else {
 
         //hash password
         const hashedPassword = await hash(password);
@@ -124,7 +124,7 @@ app.post("/user", async (req, res) => {
         const pushUser = await setDoc(doc(database, "day30", user.id), user)
         res.send(user)
         console.log('what is pushUser', pushUser)
-    }
+    // }
 })
 
 app.put("/user/:id", async (req, res) => {
