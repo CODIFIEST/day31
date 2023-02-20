@@ -55,14 +55,6 @@ const firebaseConfig = {
     messagingSenderId: process.env.VITE_messagingSenderId,
     appId: process.env.VITE_appId
 };
-// const firebaseConfig = {
-//     apiKey: "AIzaSyDhHjhc56740EXC5JokTL1Q69MP1JV1qp4",
-//     authDomain: "day27-f9d4f.firebaseapp.com",
-//     projectId: "day27-f9d4f",
-//     storageBucket: "day27-f9d4f.appspot.com",
-//     messagingSenderId: "58144372448",
-//     appId: "1:58144372448:web:c554f3d3bcf8123e26c285"
-//   };
 const userApp = (0, app_1.initializeApp)(firebaseConfig);
 const database = (0, firestore_1.getFirestore)(userApp);
 const app = (0, express_1.default)();
@@ -98,6 +90,19 @@ function getUserByEmail(email) {
         return userList.find(user => user.email === email);
     });
 }
+function doesUserExist(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let userList = [];
+        console.log('we user by email now');
+        const users = yield (0, firestore_1.getDocs)((0, firestore_1.collection)(database, "day30"));
+        users.forEach((item) => {
+            let user = item.data();
+            userList.push(user);
+        });
+        console.log(userList.find(user => user.email === email));
+        return userList.some(user => user.email === email);
+    });
+}
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const password = req.body.password;
@@ -124,25 +129,25 @@ app.post("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const id = (0, uuid_1.v4)();
     const password = req.body.password;
-    // const usercheck = await getUserByEmail(email);
-    // if (!usercheck) {
-    //     return res.status(400).send('that email already exists');
-    // }
-    // else {
-    //hash password
-    const hashedPassword = yield (0, argon2_1.hash)(password);
-    console.log('what does a hashed password look like?', hashedPassword);
-    const user = {
-        username: username,
-        email: email,
-        id: id,
-        hashedPassword: hashedPassword,
-    };
-    console.log('user------------', user);
-    const pushUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day30", user.id), user);
-    res.send(user);
-    console.log('what is pushUser', pushUser);
-    // }
+    const userExists = yield doesUserExist(email);
+    if (userExists) {
+        return res.status(400).send('that email already exists');
+    }
+    else {
+        //hash password
+        const hashedPassword = yield (0, argon2_1.hash)(password);
+        console.log('what does a hashed password look like?', hashedPassword);
+        const user = {
+            username: username,
+            email: email,
+            id: id,
+            hashedPassword: hashedPassword,
+        };
+        console.log('user------------', user);
+        const pushUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day30", user.id), user);
+        res.send(user);
+        console.log('what is pushUser', pushUser);
+    }
 }));
 app.put("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body.id;

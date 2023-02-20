@@ -22,14 +22,6 @@ const firebaseConfig = {
     messagingSenderId: process.env.VITE_messagingSenderId,
     appId: process.env.VITE_appId
 };
-// const firebaseConfig = {
-//     apiKey: "AIzaSyDhHjhc56740EXC5JokTL1Q69MP1JV1qp4",
-//     authDomain: "day27-f9d4f.firebaseapp.com",
-//     projectId: "day27-f9d4f",
-//     storageBucket: "day27-f9d4f.appspot.com",
-//     messagingSenderId: "58144372448",
-//     appId: "1:58144372448:web:c554f3d3bcf8123e26c285"
-//   };
 
 const userApp = initializeApp(firebaseConfig);
 const database = getFirestore(userApp);
@@ -72,6 +64,20 @@ async function getUserByEmail(email: string): Promise<User> {
 
 }
 
+async function doesUserExist(email: string): Promise<boolean> {
+    let userList: User[] = [];
+    console.log('we user by email now')
+    const users = await getDocs(collection(database, "day30"))
+    users.forEach((item) => {
+        let user = item.data() as any as User
+        userList.push(user)
+    })
+    console.log(userList.find(user => user.email === email))
+    return userList.some(user => user.email === email)
+
+}
+
+
 app.post("/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -102,13 +108,13 @@ app.post("/user", async (req, res) => {
     const id = uuidv4();
     const password = req.body.password;
 
-    // const usercheck = await getUserByEmail(email);
-    // if (!usercheck) {
+    const userExists = await doesUserExist(email);
+    if (userExists) {
         
-    //     return res.status(400).send('that email already exists');
+        return res.status(400).send('that email already exists');
        
-    // }
-    // else {
+    }
+    else {
 
         //hash password
         const hashedPassword = await hash(password);
@@ -124,7 +130,7 @@ app.post("/user", async (req, res) => {
         const pushUser = await setDoc(doc(database, "day30", user.id), user)
         res.send(user)
         console.log('what is pushUser', pushUser)
-    // }
+    }
 })
 
 app.put("/user/:id", async (req, res) => {
