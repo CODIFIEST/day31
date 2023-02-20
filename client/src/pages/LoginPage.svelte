@@ -24,7 +24,7 @@
                 })
                 .catch(async(error) => {
                     await push("/");
-                    alert(error);
+                    alert('Incorrect email or password');
                 })
                 .finally(() => {});
             // get token from fetch request

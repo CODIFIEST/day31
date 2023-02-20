@@ -21,14 +21,15 @@
                 headers: { Authorization: `Bearer ${document.cookie}` },
             })
             .then((res) => {
-                // alert(res.statusText)
+                // return res.data;
+                alert(`${$username} ${$email} updated`);
             })
             .catch((error) => {
-                alert(error);
+                alert('You can only edit your user.');
             })
             .finally(() => {
-                editUser.set(false);
-                return result.data;
+                // editUser.set(false);
+                // return result.data
             });
     }
 </script>
@@ -59,7 +60,7 @@
                 <button
                     on:click={async () => {
                         await putUser();
-                        alert(`${username} ${email} updated`);
+                  
                         await push("/userlist");
                     }}
                     class="btn">Submit changes</button

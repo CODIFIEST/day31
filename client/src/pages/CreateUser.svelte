@@ -23,8 +23,16 @@
                     // headers: // TODO: add authentication to header on login, maybe not here on creation
                     // {'Access-Control-Allow-Origin': '*'}
                 }
-            );
-            console.log(result.data);
+            )
+            .then((res)=>{
+
+                alert("User created successfully");
+            })
+            .catch((error) => {
+                alert('That email already exists. Use another.');
+            })
+
+            
         }
     }
 </script>
@@ -70,7 +78,7 @@
                     console.log("button clicked");
                     if (username && email) {
                         await submitForm();
-                        alert("User created successfully");
+                    
                         await push("/userlist")
                        
                     }
