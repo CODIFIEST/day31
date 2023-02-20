@@ -12,7 +12,7 @@
         console.log(email, username, password);
         if (username && email) {
             const result = await axios.post(
-                "https://day31-tan.vercel.app/user",
+                "https://day31-c.vercel.app/user",
                 {
                     email: email,
                     username: username,
