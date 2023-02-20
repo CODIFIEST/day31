@@ -12,14 +12,14 @@
         console.log(email, username, password);
         if (username && email) {
             const result = await axios.post(
-                "https://day31-c.vercel.app/user",
+                "https://day31-tan.vercel.app/user",
                 {
                     email: email,
                     username: username,
                     password: password,
                 },
                 {
-                    // withCredentials: false,
+                    withCredentials: false,
                     // headers: // TODO: add authentication to header on login, maybe not here on creation
                     // {'Access-Control-Allow-Origin': '*'}
                 }
