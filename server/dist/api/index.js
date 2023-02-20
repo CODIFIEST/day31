@@ -44,8 +44,8 @@ const argon2_1 = require("argon2");
 const jwt = __importStar(require("jsonwebtoken"));
 //use dotenv with process.env to hide api keys
 const dotenv = __importStar(require("dotenv"));
-dotenv.config({ path: '../.env' });
-// dotenv.config();
+// dotenv.config({ path: '../.env' });
+dotenv.config();
 const jwtKey = process.env.VITE_siginingKey;
 const firebaseConfig = {
     apiKey: process.env.VITE_apikey,
@@ -64,7 +64,7 @@ app.get("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get a list of all the users
     let userList = [];
     console.log('we getting user list now');
-    const users = yield (0, firestore_1.getDocs)((0, firestore_1.collection)(database, "day29"));
+    const users = yield (0, firestore_1.getDocs)((0, firestore_1.collection)(database, "day30"));
     users.forEach((item) => {
         let user = item.data();
         userList.push(user);
@@ -73,7 +73,7 @@ app.get("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 app.get("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //get a single user by id
-    const user = yield (0, firestore_1.getDoc)((0, firestore_1.doc)(database, "day29", req.body.id));
+    const user = yield (0, firestore_1.getDoc)((0, firestore_1.doc)(database, "day30", req.body.id));
     console.log(user.data());
     res.send(user.data());
 }));
@@ -81,7 +81,7 @@ function getUserByEmail(email) {
     return __awaiter(this, void 0, void 0, function* () {
         let userList = [];
         console.log('we user by email now');
-        const users = yield (0, firestore_1.getDocs)((0, firestore_1.collection)(database, "day29"));
+        const users = yield (0, firestore_1.getDocs)((0, firestore_1.collection)(database, "day30"));
         users.forEach((item) => {
             let user = item.data();
             userList.push(user);
@@ -116,19 +116,25 @@ app.post("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const id = (0, uuid_1.v4)();
     const password = req.body.password;
-    //hash password
-    const hashedPassword = yield (0, argon2_1.hash)(password);
-    console.log('what does a hashed password look like?', hashedPassword);
-    const user = {
-        username: username,
-        email: email,
-        id: id,
-        hashedPassword: hashedPassword,
-    };
-    console.log('user------------', user);
-    const pushUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day29", user.id), user);
-    res.send(user);
-    console.log('what is pushUser', pushUser);
+    const usercheck = yield getUserByEmail(email);
+    if (usercheck.email === email) {
+        return res.status(400).send('That user exists');
+    }
+    else {
+        //hash password
+        const hashedPassword = yield (0, argon2_1.hash)(password);
+        console.log('what does a hashed password look like?', hashedPassword);
+        const user = {
+            username: username,
+            email: email,
+            id: id,
+            hashedPassword: hashedPassword,
+        };
+        console.log('user------------', user);
+        const pushUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day30", user.id), user);
+        res.send(user);
+        console.log('what is pushUser', pushUser);
+    }
 }));
 app.put("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body.id;
@@ -154,7 +160,7 @@ app.put("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (decodedUser.id !== req.body.id) {
             return res.status(400).send({ error: "wrong user logged in, bad id" });
         }
-        const updateUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day29", req.body.id), user, { merge: true });
+        const updateUser = yield (0, firestore_1.setDoc)((0, firestore_1.doc)(database, "day30", req.body.id), user, { merge: true });
         console.log(updateUser);
         res.send(user);
     }));
