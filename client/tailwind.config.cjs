@@ -3,6 +3,7 @@ const { default: themes } = require("daisyui/src/colors/themes")
 
 
 module.exports = {
+
   content: ["./src/**/*.{html,js,svelte}"],
   theme: {
     extend: {},
@@ -19,4 +20,5 @@ module.exports = {
     // prefix: "",
     darkTheme: "forest",
   },
+  
 }

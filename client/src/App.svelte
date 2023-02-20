@@ -1,64 +1,52 @@
 <script lang="ts">
-  import CreateUser from "./components/CreateUser.svelte";
-  import DisplayUsers from "./components/DisplayUsers.svelte";
-  import EditUser from "./components/EditUser.svelte";
-  import Login from "./components/Login.svelte";
-  import editUser from "./stores/editUser";
-  import isLoggedIn from "./stores/isLoggedIn";
-  let displayusers: boolean = false;
-  // let edituser: boolean = false;
-  function toggleDisplay() {
-    displayusers = !displayusers;
-  }
+  import Home from "./pages/Home.svelte";
+  import Router from "svelte-spa-router";
+
+  import Header from "./components/Header.svelte";
+  import Footer from "./components/Footer.svelte";
+  import LoginPage from "./pages/LoginPage.svelte";
+  import NotFound from "./pages/NotFound.svelte";
+  import EditUser from "./pages/EditUser.svelte";
+  import DisplayUsers from "./pages/DisplayUsers.svelte";
+  import CreateUser from "./pages/CreateUser.svelte";
+  const routes = {
+    // Exact path
+    "/": Home,
+    // route to create a user to be able to log in
+    "/register": CreateUser,
+    // Using named parameters, with last being optional
+    "/login": LoginPage,
+
+    // Display all users
+    "/userlist": DisplayUsers,
+    //edit only your own user
+    "/edituser": EditUser,
+
+    // Catch-all
+    // This is optional, but if present it must be the last
+    "*": NotFound,
+  };
 </script>
 
 <main>
+  <Header />
   <div
     class="hero min-h-screen"
     style="background-image: url('https://www.arweave.net/hNN-l4QsOuWIRWwpOn-VDjso2NsGBW3Mg30p18Gs6zQ?ext=png');"
   >
     <div class="hero-overlay bg-opacity-60" />
     <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="mb-5 text-5xl font-bold text-secondary">Hello there</h1>
-        <p class="mb-5 text-secondary">
-          Pandas' last resort was the super secret kill switch embedded in the crane core logic.
-        </p>
-        <div class="container space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <Login />
-            </div>
-            <div>
-              <CreateUser />
-            </div>
-          </div>
-          <div class="grid grid-cols-1 gap-4">
-            <!-- <Header/> -->
-            {#if $isLoggedIn}
-              <div>
-                <button class="btn" on:click={toggleDisplay}
-                  >Show/Hide Users</button
-                >
-              </div>
-              {#if !displayusers}
-                <!-- <CreateUser /> -->
-              {:else if displayusers && !$editUser}
-                <!--assuming you can see the user list here -->
-                <div><DisplayUsers /></div>
-              {:else}
-                <div><EditUser /></div>
-              {/if}
-            {/if}
-          </div>
-        </div>
+      <div class="max-w-3xl">
+        <Router {routes} />
       </div>
     </div>
   </div>
+
+  <Footer />
 </main>
 
-<style global lang="postcss">
+<!-- <style global lang="postcss">
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
-</style>
+</style> -->

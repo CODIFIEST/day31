@@ -10,8 +10,8 @@ import * as jwt from "jsonwebtoken"
 
 //use dotenv with process.env to hide api keys
 import * as dotenv from "dotenv"
-dotenv.config({ path: '../.env' });
-// dotenv.config();
+// dotenv.config({ path: '../.env' });
+dotenv.config();
 const jwtKey = process.env.VITE_siginingKey;
 
 const firebaseConfig = {
@@ -22,6 +22,7 @@ const firebaseConfig = {
     messagingSenderId: process.env.VITE_messagingSenderId,
     appId: process.env.VITE_appId
 };
+  
 const userApp = initializeApp(firebaseConfig);
 const database = getFirestore(userApp);  
 
@@ -32,7 +33,9 @@ app.get("/user", async (req, res) =>{
     // get a list of all the users
     let userList:User[]=[];
     console.log('we getting user list now')
-    const users = await getDocs(collection(database, "day29" ))
+
+    const users = await getDocs(collection(database, "day30" ))
+
     users.forEach((item) =>{
         let user = item.data() as any as User
         userList.push(user)
@@ -42,7 +45,7 @@ app.get("/user", async (req, res) =>{
 
 app.get("/user/:id", async (req, res) =>{
     //get a single user by id
-    const user = await getDoc(doc(database,"day29", req.body.id ))
+    const user = await getDoc(doc(database,"day30", req.body.id ))
     console.log(user.data())
     res.send(user.data())
 
@@ -51,7 +54,7 @@ app.get("/user/:id", async (req, res) =>{
 async function getUserByEmail(email:string):Promise<User>{
     let userList:User[]=[];
     console.log('we user by email now')
-    const users = await getDocs(collection(database, "day29" ))
+    const users = await getDocs(collection(database, "day30" ))
     users.forEach((item) =>{
         let user = item.data() as any as User
         userList.push(user)
@@ -91,7 +94,12 @@ app.post("/user", async (req, res) =>{
     const id = uuidv4();
     const password = req.body.password;
 
-    
+    const usercheck = await getUserByEmail(email);
+    if (usercheck.email === email){
+        return res.status(400).send('That user exists');
+    }
+    else{
+
     //hash password
     const hashedPassword= await hash(password);
     console.log ('what does a hashed password look like?', hashedPassword)
@@ -103,10 +111,10 @@ app.post("/user", async (req, res) =>{
         hashedPassword:hashedPassword,
     }
     console.log('user------------', user)
-    const pushUser = await setDoc(doc(database, "day29", user.id), user)
+    const pushUser = await setDoc(doc(database, "day30", user.id), user)
     res.send(user)
     console.log('what is pushUser', pushUser)
-
+    }
 })
 
 app.put("/user/:id", async (req, res)=>{
@@ -134,7 +142,7 @@ console.log(user)
          if (decodedUser.id !== req.body.id){
             return res.status(400).send({error: "wrong user logged in, bad id"})
          }
-         const updateUser = await setDoc(doc(database, "day29", req.body.id), user,  { merge: true })
+         const updateUser = await setDoc(doc(database, "day30", req.body.id), user,  { merge: true })
 
          console.log(updateUser)    
          res.send(user)

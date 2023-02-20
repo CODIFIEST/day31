@@ -1,3 +1,12 @@
+## Day 31:
+- Add routing to your User Creator client app! Each "page" should a be separate bit of logic. Now you no longern eed an App.svelte with if this, display this component, otherwise, display this other component. Each bit of functionality can be separate! Thisis how how we give our front-end apps STRUCTURE, to make code clean and separate.
+IE: A Home page, that people land on. A button to get to the REGISTER page, which creates a user. A button to SEE all the users. A button to EDIT your user.
+They should all be wrapped by the main "layout" in app.svelte.
+
+Use the svelte-spa-router library here. There are many libraries, I liek this one, feel free to try a different one!
+https://github.com/ItalyPaleAle/svelte-spa-router 
+
+
 ## Day30:
 x- Add a password, and passowrd hashing via either bcrypt or argon2, to your express user creation route!
 x- Add a post /login route a user can use to login, verify the password is correct, and receive a JWT!
