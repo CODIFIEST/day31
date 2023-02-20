@@ -26,7 +26,7 @@
             )
             .then((res)=>{
 
-                alert("User created successfully");
+                alert("User created successfully. Log in to edit your user.");
             })
             .catch((error) => {
                 alert('That email already exists. Use another.');
@@ -79,7 +79,7 @@
                     if (username && email) {
                         await submitForm();
                     
-                        await push("/userlist")
+                        await push("/login")
                        
                     }
                 }}
