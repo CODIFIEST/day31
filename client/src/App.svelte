@@ -9,6 +9,8 @@
   import EditUser from "./pages/EditUser.svelte";
   import DisplayUsers from "./pages/DisplayUsers.svelte";
   import CreateUser from "./pages/CreateUser.svelte";
+  import Notifications from "svelte-notifications";
+
   const routes = {
     // Exact path
     "/": Home,
@@ -37,7 +39,9 @@
     <div class="hero-overlay bg-opacity-60" />
     <div class="hero-content text-center">
       <div class="max-w-3xl">
-        <Router {routes} />
+        <Notifications>
+          <Router {routes} />
+        </Notifications>
       </div>
     </div>
   </div>

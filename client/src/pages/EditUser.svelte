@@ -6,6 +6,36 @@
     import type { UserC } from "../domain/user";
     import editUser from "../stores/editUser";
     import { pop, push } from "svelte-spa-router";
+    import { getNotificationsContext } from "svelte-notifications";
+
+    const { addNotification } = getNotificationsContext();
+
+    function editSuccess() {
+        addNotification({
+            text: `${$username} ${$email} updated`,
+            position: "bottom-center",
+            type: "success",
+            removeAfter: 4000,
+        });
+    }
+    function editFail() {
+        addNotification({
+            text: "You can only edit your user.",
+            position: "bottom-center",
+            type: "error",
+            removeAfter: 4000,
+        });
+    }
+
+    function NothingHappened() {
+        addNotification({
+            text: "No changes were made",
+            position: "bottom-center",
+           
+            removeAfter: 4000,
+        });
+    }
+
     let name: string = "";
     let emailaddy: string = "";
 
@@ -20,12 +50,15 @@
                 // withCredentials: true,
                 headers: { Authorization: `Bearer ${document.cookie}` },
             })
-            .then((res) => {
+            .then(async (res) => {
                 // return res.data;
-                alert(`${$username} ${$email} updated`);
+                // alert(`${$username} ${$email} updated`);
+                editSuccess();
+                await push("/userlist");
             })
             .catch((error) => {
-                alert('You can only edit your user.');
+                // alert("You can only edit your user.");
+                editFail();
             })
             .finally(() => {
                 // editUser.set(false);
@@ -60,16 +93,16 @@
                 <button
                     on:click={async () => {
                         await putUser();
-                  
-                        await push("/userlist");
+
+
                     }}
                     class="btn">Submit changes</button
                 >
                 <br /><br />
                 <button
-                    on:click={async () => {
-                        alert("changes not saved");
+                    on:click={async () => {    
                         await pop();
+                        NothingHappened();
                     }}
                     class="btn">Cancel</button
                 >

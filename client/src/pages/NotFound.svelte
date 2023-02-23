@@ -15,6 +15,7 @@
   <div class="card-body">
     <h1 class="card-title">404</h1>
     <p>That page is not found... redirecting to home page.</p>
+  
     <div class="card-actions justify-end">
       <!-- <button class="btn btn-primary">Buy Now</button> -->
     </div>
